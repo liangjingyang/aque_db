@@ -1,4 +1,4 @@
-AQUEDB: A simple key-value DB abstraction for web game. 
+AQUEDB: A simple key-value DB abstraction for web game 
 ===========================================================
 Inspired by boss_db https://github.com/evanmiller/boss_db
 
@@ -32,6 +32,9 @@ Usage
 
 Introduction
 ------------
+    Most of data is convert to binary by term_to_binary/1 before inserted into databases.
+    Do not use AqueDB, if you need update data in DB client direct.
+
     AqueDb provides:
 
         pool(poolboy) 
