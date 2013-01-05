@@ -15,6 +15,7 @@
 -export([init/1, terminate/1, start/1, stop/0]).
 
 -export([
+        init_tab/2, 
         insert/4, 
         lookup/3, 
         delete/3,
@@ -44,6 +45,36 @@ init(Options) ->
 
 terminate(Pid) -> 
     exit(Pid, normal).
+
+init_tab(_Pid, []) ->
+    ok;
+init_tab(Pid, [counters|Tables]) ->
+    Query = [
+        "CREATE TABLE IF NOT EXISTS `counters` " ++
+        "( `key` varchar(50) DEFAULT NULL," ++
+        "  `value` int(11) unsigned NOT NULL DEFAULT '0'," ++
+        "  PRIMARY KEY (`key`)" ++
+        ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='counters'"],
+    Res = fetch(Pid, Query),
+    case Res of
+        {updated, _} -> init_tab(Pid, Tables);
+        {error, MysqlRes} -> erlang:throw({error, mysql:get_result_reason(MysqlRes)})
+    end;
+init_tab(Pid, [Tab|Tables]) ->
+    Query = [
+        "CREATE TABLE IF NOT EXISTS " ++
+        atom_to_list(Tab) ++
+        " ( `key` int(11) unsigned NOT NULL DEFAULT '0'," ++ 
+        "   `bin` blob DEFAULT NULL," ++
+        "    PRIMARY KEY (`key`)" ++
+        " ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='" ++ 
+        atom_to_list(Tab) ++ "'"],
+    %io:format("Query=~p~n", Query),
+    Res = fetch(Pid, Query),
+    case Res of
+        {updated, _} -> init_tab(Pid, Tables);
+        {error, MysqlRes} -> erlang:throw({error, mysql:get_result_reason(MysqlRes)})
+    end.
 
 insert(Pid, Tab, Key, Bin) ->
     Query = [

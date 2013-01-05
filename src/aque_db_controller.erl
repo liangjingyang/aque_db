@@ -34,6 +34,10 @@ init(Options) ->
     {ok, Conn} = Adapter:init(Options),
     {ok, #state{adapter = Adapter, connection = Conn}}.
 
+handle_call({init_tab, Tables}, _From, State) ->
+    #state{adapter = Adapter, connection = Conn} = State,
+    {reply, Adapter:init_tab(Conn, Tables), State};
+
 handle_call({insert, Tab, Key, Value}, _From, State) ->
     #state{adapter = Adapter, connection = Conn} = State,
     Bin = term_to_binary(Value),

@@ -13,10 +13,11 @@
 -behaviour(aque_db_adapter).
 
 -export([
+        start/1, 
+        stop/0,
         init/1, 
         terminate/1, 
-        start/1, 
-        stop/0
+        init_tab/2
     ]).
 
 -export([
@@ -44,6 +45,21 @@ init(_Options) ->
 
 terminate(_) ->
     ok.
+
+init_tab(_, Tables) ->
+    lists:foreach(
+        fun (counters) ->
+                mnesia:create_table(counters, [
+                        {attributes, [key, value]},
+                        {disc_copies, [node()]}
+                    ]);
+            (Tab) ->
+                mnesia:create_table(Tab, [
+                        {record_name, aque_tab_rec}, 
+                        {disc_copies, [node()]},
+                        {attributes, record_info(fields, aque_tab_rec)}
+                    ])
+        end, Tables).
 
 insert(_, Tab, Key, Bin) ->
     Res = mnesia:dirty_write(Tab, #aque_tab_rec{key = Key, bin = Bin}),

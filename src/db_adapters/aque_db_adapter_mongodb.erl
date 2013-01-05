@@ -15,6 +15,7 @@
 -export([start/1, stop/0, init/1, terminate/1]).
 
 -export([
+        init_tab/2,
         insert/4, 
         lookup/3, 
         delete/3, 
@@ -32,6 +33,7 @@ start(_Options) ->
     application:start(mongodb).
 
 stop() ->
+    application:stop(mongodb),
     ok.
 
 init(Options) ->
@@ -51,6 +53,9 @@ execute({WriteMode, ReadMode, Connection, Database}, Fun) ->
     mongo:do(WriteMode, ReadMode, Connection, Database, Fun).
 
 %% --------------------------------------------------------
+
+init_tab(_Conn, _Tables) ->
+    ok.
 
 insert(Conn, Collection, Key, Bin) ->
     Doc = {'_id', Key, bin, Bin},

@@ -11,7 +11,7 @@
 
 -module(aque_db).
 
--export([start/1, start/2, stop/0]).
+-export([start/0, start/1, start/2, stop/0]).
 
 -export([
         insert/3,
@@ -45,30 +45,41 @@
 -define(DEFAULT_TIMEOUT, (10 * 1000)).
 -define(DEFAULT_POOLNAME, mnesia_aque_pool).
 
+start() ->
+    application:start(aque_db).
+
 start(_Type, Options) ->
     start(Options).
 
 -spec start(list()) -> {ok, pid()}.
 start(Options) ->
     {ok, Sup} = aque_db_sup:start_link(),
+    Tables = get_env(aque_tab),
     lists:foreach(fun(Adapter) ->
                 {Register, AdapterName} = proplists:get_value(adapter, Adapter, {local, mnesia}),
                 AdapterMod = list_to_atom(lists:concat(["aque_db_adapter_", AdapterName])),
                 PoolName = list_to_atom(lists:concat([AdapterName, "_aque_pool"])),
-                io:format("PoolName=~w~n", [PoolName]),
+                
                 AdapterMod:start(Adapter),
+
                 Args = [
                     {name, {Register, PoolName}},
                     {worker_module, aque_db_controller},
                     {size, 5}, {max_overflow, 10}|Adapter],
                 supervisor:start_child(Sup, 
                     {PoolName, {poolboy, start_link, [Args]}, 
-                        permanent, 2000, worker, [poolboy]})
+                        permanent, 2000, worker, [poolboy]}),
+
+                io:format("Pool ~w start...ok!~n", [PoolName]),
+                init_tab(PoolName, Tables)
         end, Options),
     {ok, Sup}.
 
 stop() ->
     ok.
+
+init_tab(PoolName, Tables) ->
+    do_call(PoolName, {init_tab, Tables}).
 
 -spec insert( atom(), any(), any() ) -> true | {error, _}.
 insert(Tab, Key, Value) ->
@@ -161,6 +172,14 @@ make_pool_name({Db, Database}) ->
     list_to_atom(lists:concat([Db, "_", Database, "_aque_pool"]));
 make_pool_name(Db) ->
     list_to_atom(lists:concat([Db, "_aque_pool"])).
+
+get_env(Key) ->
+    case application:get_env(aque_db, Key) of
+        undefined ->
+            [];
+        {ok, List} ->
+            List
+    end.
 
 get_pool_status() ->
     get_pool_status(?DEFAULT_POOLNAME).

@@ -21,7 +21,19 @@
                 stdlib,
                 crypto
             ]},
-        {env, []},
+        {env, 
+            [
+                % key-value table, created in aque_db.erl
+                {aque_tab, 
+                    [
+                        test_1,
+                        test_2,
+                        counters,
+                        test_3
+                    ]
+                }
+            ]
+        },
         {mod, 
             {aque_db, 
 
