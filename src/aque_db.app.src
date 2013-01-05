@@ -1,0 +1,53 @@
+%%===========================================================================
+%%     FileName: aque_db.app.src
+%%         Desc: app
+%%       Author: liangjingyang
+%%        Email: ljy0922@gmail.com
+%%     HomePage: http://www.cnblogs.com/liangjingyang
+%%      Version: 0.0.1
+%%   LastChange: 2013-01-05 13:10:05
+%%      History:
+%%===========================================================================
+{application, aque_db,
+    [
+        {description, "AqueDB: a simple key-value db layer for web game"},
+        {vsn, "0.0.1"},
+        {registered, [
+                aque_db_sup
+            ]},
+        {modules, []},
+        {applications, [
+                kernel,
+                stdlib,
+                crypto
+            ]},
+        {env, []},
+        {mod, 
+            {aque_db, 
+
+                % DBOptions
+                % you can conn diff db(mysql, mnesia, mongodb) at the same time
+                [ 
+                    [
+                        {adapter, {local, mnesia}} 
+                    ]
+                        , 
+                    [
+                        {adapter, {local, mysql}},
+                        {db_host, "localhost"},
+                        {db_port, 3306},
+                        {db_username, "root"},
+                        {db_password, "2005"},
+                        {db_database, "test"}
+                    ]
+                       ,
+                    [
+                        {adapter, {local, mongodb}},
+                        {db_host, "127.0.0.1"},
+                        {db_port, 27017},
+                        {db_database, test}
+                    ]
+                ]
+
+            }}
+    ]}.
