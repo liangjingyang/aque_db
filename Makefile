@@ -22,6 +22,6 @@ deps:
 	@$(REBAR) compile
 
 test: all
-	(erlc -o ebin test/test_aque_db.erl; erl -pa ebin deps/*/ebin -name aque_db_test@127.0.0.1 -noinput -s test_aque_db start)
+	(erlc -o ebin test/test_aque_db.erl; erl -pa ebin deps/*/ebin -name aque_db_test@127.0.0.1 -noinput -eval "test_aque_db:start(), halt(0)")
 
 
