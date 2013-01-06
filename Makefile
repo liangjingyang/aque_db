@@ -9,7 +9,7 @@ all:
 	@$(REBAR) get-deps
 	@$(REBAR) compile
 
-aque:
+aque_db:
 	@$(REBAR) compile skip_deps=true
 
 clean:
@@ -20,5 +20,8 @@ get-deps:
 
 deps:
 	@$(REBAR) compile
+
+test: all
+	(erlc -o ebin test/test_aque_db.erl; erl -pa ebin deps/*/ebin -name aque_db_test@127.0.0.1 -noinput -s test_aque_db start)
 
 
