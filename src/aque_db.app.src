@@ -23,11 +23,11 @@
             ]},
         {env, 
             [
-                % key-value table, created in aque_db.erl
+                % auto create table when starting aquedb in aque_db.erl
                 {aque_tab, 
                     [
-                        aque_db_test,
-                        counters
+                        %aque_db_test,
+                        %counters
                     ]
                 }
             ]

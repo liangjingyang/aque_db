@@ -61,7 +61,7 @@ test_delete(Db) ->
 test_count(Db) ->
     case aque_db:count(Db, ?TEST_TAB) of
         Count when is_integer(Count) andalso Count >= 1 -> 
-            ?LOG("Test ~w count ... ok! Count: ~w", [Db, Count]);
+            ?LOG("Test ~w count ... ok!", [Db, Count]);
         Res -> 
             ?LOG("Test ~w count ... error, Res: ~p", [Db, Res])
     end.

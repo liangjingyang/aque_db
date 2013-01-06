@@ -45,6 +45,8 @@
         get_pool_status/1
     ]).
 
+-type reason() :: any().
+
 -define(DEFAULT_TIMEOUT, (10 * 1000)).
 -define(DEFAULT_POOLNAME, mnesia_aque_pool).
 
@@ -81,32 +83,33 @@ start(Options) ->
 stop() ->
     ok.
 
+-spec init_tab( atom(), atom() ) -> ok | {error, reason()}.
 init_tab(PoolName, Tables) ->
     do_call(PoolName, {init_tab, Tables}).
 
--spec insert( atom(), any(), any() ) -> true | {error, _}.
+-spec insert( atom(), any(), any() ) -> true | {error, reason()}.
 insert(Tab, Key, Value) ->
     do_call(?DEFAULT_POOLNAME, {insert, Tab, Key, Value}).
 
--spec insert( atom() | tuple(), atom(), any(), any() ) -> true | {error, _}.
+-spec insert( atom() | tuple(), atom(), any(), any() ) -> true | {error, reason()}.
 insert(Db, Tab, Key, Value) ->
     PoolName = make_pool_name(Db),
     do_call(PoolName, {insert, Tab, Key, Value}).
 
--spec lookup( atom(), any() ) -> list() | {error, _}.
+-spec lookup( atom(), any() ) -> list() | {error, reason()}.
 lookup(Tab, Key) ->
     do_call(?DEFAULT_POOLNAME, {lookup, Tab, Key}).
 
--spec lookup( atom() | tuple(), atom(), any() ) -> list() | {error, _}.
+-spec lookup( atom() | tuple(), atom(), any() ) -> list() | {error, reason()}.
 lookup(Db, Tab, Key) ->
     PoolName = make_pool_name(Db),
     do_call(PoolName, {lookup, Tab, Key}).
 
--spec delete( atom(), any() ) -> true | {error, _}.
+-spec delete( atom(), any() ) -> true | {error, reason()}.
 delete(Tab, Key) ->
     do_call(?DEFAULT_POOLNAME, {delete, Tab, Key}).
 
--spec delete( atom() | tuple(), atom(), any() ) -> true | {error, _}.
+-spec delete( atom() | tuple(), atom(), any() ) -> true | {error, reason()}.
 delete(Db, Tab, Key) ->
     PoolName = make_pool_name(Db),
     do_call(PoolName, {delete, Tab, Key}).
@@ -165,7 +168,7 @@ tab2list(Db, Tab) ->
     PoolName = make_pool_name(Db),
     do_call(PoolName, {tab2list, Tab}).
 
--spec update_table( atom(), atom() ) -> ok | {error, _}.
+-spec update_table( atom(), atom() ) -> ok | {error, reason()}.
 update_table(Tab, Fun) ->
     KeyList = all_keys(Tab),
     lists:foreach(fun(Key) ->
@@ -175,7 +178,7 @@ update_table(Tab, Fun) ->
         end, KeyList).
                 
 
--spec update_table( atom() | tuple(), atom(), atom() ) -> ok | {error, _}.
+-spec update_table( atom() | tuple(), atom(), atom() ) -> ok | {error, reason()}.
 update_table(Db, Tab, Fun) ->
     KeyList = all_keys(Db, Tab),
     lists:foreach(fun(Key) ->

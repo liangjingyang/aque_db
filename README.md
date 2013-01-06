@@ -1,4 +1,4 @@
-AQUEDB: A simple key-value DB abstraction for webgame or others
+AQUEDB: A simple key-value DB abstraction for web game
 ===========================================================
 Inspired by boss_db https://github.com/evanmiller/boss_db
 
@@ -32,17 +32,17 @@ Usage
 
 Introduction
 ------------
-    A simple key-value DB abstraction for webgame or others.
-    Most of data is convert to binary by term_to_binary/1 before inserted into databases.
+    A simple KEY-VALUE DB abstraction for web game.
     Do not use AqueDB, if you need update data in DB client direct.
+
+    The type(integer, string or other) of KEY depends on the design of your table.
+    The VALUE can be any erlang term, it will be converted to binary by term_to_binary/1 before inserted into databases.
 
     AqueDb provides:
         
         init tables(see aque_db.app.src)
 
         pool(poolboy) 
-
-        AND
 
         operations: 
             insert
@@ -54,5 +54,5 @@ Introduction
             update_counter 
             tab2list
 
-    If you use mnesia, don't forget create schema before start AqueDb.
+    If you use mnesia, don't forget to create schema before start AqueDb.
 
