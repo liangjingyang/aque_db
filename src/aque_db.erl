@@ -22,7 +22,8 @@
         update_counter/2,
         incr/1,
         all_keys/1,
-        tab2list/1
+        tab2list/1,
+        update_table/2
     ]).
 
 -export([
@@ -34,10 +35,12 @@
         update_counter/3,
         incr/2, 
         all_keys/2,
-        tab2list/2
+        tab2list/2,
+        update_table/3
     ]).
 
 -export([
+        init_tab/2,
         get_pool_status/0,
         get_pool_status/1
     ]).
@@ -85,23 +88,23 @@ init_tab(PoolName, Tables) ->
 insert(Tab, Key, Value) ->
     do_call(?DEFAULT_POOLNAME, {insert, Tab, Key, Value}).
 
--spec lookup( atom(), any() ) -> list() | {error, _}.
-lookup(Tab, Key) ->
-    do_call(?DEFAULT_POOLNAME, {lookup, Tab, Key}).
-
--spec delete( atom(), any() ) -> true | {error, _}.
-delete(Tab, Key) ->
-    do_call(?DEFAULT_POOLNAME, {delete, Tab, Key}).
-
 -spec insert( atom() | tuple(), atom(), any(), any() ) -> true | {error, _}.
 insert(Db, Tab, Key, Value) ->
     PoolName = make_pool_name(Db),
     do_call(PoolName, {insert, Tab, Key, Value}).
 
+-spec lookup( atom(), any() ) -> list() | {error, _}.
+lookup(Tab, Key) ->
+    do_call(?DEFAULT_POOLNAME, {lookup, Tab, Key}).
+
 -spec lookup( atom() | tuple(), atom(), any() ) -> list() | {error, _}.
 lookup(Db, Tab, Key) ->
     PoolName = make_pool_name(Db),
     do_call(PoolName, {lookup, Tab, Key}).
+
+-spec delete( atom(), any() ) -> true | {error, _}.
+delete(Tab, Key) ->
+    do_call(?DEFAULT_POOLNAME, {delete, Tab, Key}).
 
 -spec delete( atom() | tuple(), atom(), any() ) -> true | {error, _}.
 delete(Db, Tab, Key) ->
@@ -162,6 +165,25 @@ tab2list(Db, Tab) ->
     PoolName = make_pool_name(Db),
     do_call(PoolName, {tab2list, Tab}).
 
+-spec update_table( atom(), atom() ) -> ok | {error, _}.
+update_table(Tab, Fun) ->
+    KeyList = all_keys(Tab),
+    lists:foreach(fun(Key) ->
+                Rec = lookup(Tab, Key),
+                NewRec = Fun(Rec),
+                insert(Tab, Key, NewRec)
+        end, KeyList).
+                
+
+-spec update_table( atom() | tuple(), atom(), atom() ) -> ok | {error, _}.
+update_table(Db, Tab, Fun) ->
+    KeyList = all_keys(Db, Tab),
+    lists:foreach(fun(Key) ->
+                Rec = lookup(Db, Tab, Key),
+                NewRec = Fun(Rec),
+                insert(Db, Tab, Key, NewRec)
+        end, KeyList).
+    
 do_call(PoolName, Msg) ->
     Worker = poolboy:checkout(PoolName),
     Reply = gen_server:call(Worker, Msg, ?DEFAULT_TIMEOUT),

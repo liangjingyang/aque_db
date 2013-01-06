@@ -25,7 +25,7 @@ start() ->
     test_db(mnesia),
     test_db(mysql),
     test_db(mongodb),
-    halt(0).
+    ok.
 
 test_db(Db) ->
     test_init_tab(Db),

@@ -145,7 +145,8 @@ all_keys(Pid, Tab) ->
                         counters ->
                             [binary_to_atom(B, utf8)||[B]<-List];
                         _ ->
-                            [list_to_integer(binary_to_list(B))||[B]<-List]
+                            %io:format("all_keys, MysqlRes=~w, List = ~w~n", [MysqlRes, List]),
+                            [B||[B]<-List]
                     end
             end;
         {error, MysqlRes} ->
