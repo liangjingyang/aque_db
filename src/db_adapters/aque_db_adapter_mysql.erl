@@ -185,7 +185,7 @@ tab2list(Pid, Tab) ->
     end.
 
 count(Pid, Tab) ->
-    Res = fetch(Pid, ["SELECT COUNT(*) AS count FROM " ++ atom_to_list(Tab)]),
+    Res = fetch(Pid, ["SELECT COUNT(1) AS count FROM " ++ atom_to_list(Tab)]),
     case Res of
         {data, MysqlRes} ->
             [[Count]] = mysql:get_result_rows(MysqlRes),
